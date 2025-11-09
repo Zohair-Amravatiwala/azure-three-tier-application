@@ -5,18 +5,18 @@
  */
 
 # Private DNS Zone for PostgreSQL Flexible Server
- resource "azurerm_private_dns_zone" "postgreSQL" {
-   name = "privatelink.postgres.database.azure.com"
-   resource_group_name = var.resource_group_name
-   tags = var.tags
- }
+resource "azurerm_private_dns_zone" "postgreSQL" {
+  name                = "privatelink.postgres.database.azure.com"
+  resource_group_name = var.resource_group_name
+  tags                = var.tags
+}
 
 # Link Private DNS Zone to VNet
 resource "azurerm_private_dns_zone_virtual_network_link" "postgreSQL" {
-  name = "postgres-dns-link"
-  resource_group_name = var.resource_group_name
+  name                  = "postgres-dns-link"
+  resource_group_name   = var.resource_group_name
   private_dns_zone_name = azurerm_private_dns_zone.postgreSQL.name
-  virtual_network_id = var.virtual_network_id
-  registration_enabled = true
-  tags = var.tags
+  virtual_network_id    = var.virtual_network_id
+  registration_enabled  = true
+  tags                  = var.tags
 }

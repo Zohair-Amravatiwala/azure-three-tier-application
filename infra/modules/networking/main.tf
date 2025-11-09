@@ -84,8 +84,8 @@ resource "azurerm_network_security_group" "public" {
 
 # Associate Public Subnet NSG with Public Subnet
 resource "azurerm_subnet_network_security_group_association" "public" {
-  count = length(var.public_subnet_address_prefixes)
-  subnet_id = azurerm_subnet.public[count.index].id
+  count                     = length(var.public_subnet_address_prefixes)
+  subnet_id                 = azurerm_subnet.public[count.index].id
   network_security_group_id = azurerm_network_security_group.public.id
 }
 
@@ -147,8 +147,8 @@ resource "azurerm_network_security_group" "private" {
 
 # Associate Private Subnet NSG with Private Subnet
 resource "azurerm_subnet_network_security_group_association" "private" {
-  count = length(var.private_subnet_address_prefixes)
-  subnet_id = azurerm_subnet.private[count.index].id
+  count                     = length(var.private_subnet_address_prefixes)
+  subnet_id                 = azurerm_subnet.private[count.index].id
   network_security_group_id = azurerm_network_security_group.private.id
 }
 
@@ -174,52 +174,52 @@ resource "azurerm_subnet" "database" {
 
 #Database Subnet NSG
 resource "azurerm_network_security_group" "databse" {
-  name = "${var.resource_name_prefix}-db-nsg"
+  name                = "${var.resource_name_prefix}-db-nsg"
   resource_group_name = var.resource_group_name
-  location = var.location
-  tags = var.tags
+  location            = var.location
+  tags                = var.tags
 
   security_rule {
-    name = "AllowPostgreSQLInbound"
-    priority = 100
-    direction = "Inbound"
-    access = "Allow"
-    protocol = "Tcp"
-    source_address_prefix = var.vnet_address_space
-    source_port_range = "*"
+    name                       = "AllowPostgreSQLInbound"
+    priority                   = 100
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_address_prefix      = var.vnet_address_space
+    source_port_range          = "*"
     destination_address_prefix = "*"
-    destination_port_range = "5432"
+    destination_port_range     = "5432"
   }
 
   security_rule {
-    name = "AllowVnetOutbound"
-    priority = 200
-    direction = "Outbound"
-    access = "Allow"
-    protocol = "*"
-    source_address_prefix = "*"
-    source_port_range = "*"
+    name                       = "AllowVnetOutbound"
+    priority                   = 200
+    direction                  = "Outbound"
+    access                     = "Allow"
+    protocol                   = "*"
+    source_address_prefix      = "*"
+    source_port_range          = "*"
     destination_address_prefix = "VirtualNetwork"
-    destination_port_range = "*"
+    destination_port_range     = "*"
   }
 
   security_rule {
-    name = "AllowAzureServicesOutbound"
-    priority = 210
-    direction = "Outbound"
-    access = "Allow"
-    protocol = "Tcp"
-    source_address_prefix = "*"
-    source_port_range = "*"
+    name                       = "AllowAzureServicesOutbound"
+    priority                   = 210
+    direction                  = "Outbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_address_prefix      = "*"
+    source_port_range          = "*"
     destination_address_prefix = "AzureCloud"
-    destination_port_range = "443"
+    destination_port_range     = "443"
   }
 }
 
 # Associate Database Subnet NSG with Database Subnet
 resource "azurerm_subnet_network_security_group_association" "database" {
-  count = length(var.database_subnet_address_prefixes)
-  subnet_id = azurerm_subnet.database[count.index].id
+  count                     = length(var.database_subnet_address_prefixes)
+  subnet_id                 = azurerm_subnet.database[count.index].id
   network_security_group_id = azurerm_network_security_group.databse.id
 }
 
@@ -344,24 +344,24 @@ resource "azurerm_subnet_network_security_group_association" "bastion" {
 
 #Bastion Public IP
 resource "azurerm_public_ip" "bastion" {
-  name = "${var.resource_name_prefix}-bastion-pip"
+  name                = "${var.resource_name_prefix}-bastion-pip"
   resource_group_name = var.resource_group_name
-  location = var.location
-  allocation_method = "Static"
-  sku = "Standard"
-  tags = var.tags
+  location            = var.location
+  allocation_method   = "Static"
+  sku                 = "Standard"
+  tags                = var.tags
 }
 
 # Bastion Host
 resource "azurerm_bastion_host" "main" {
-  name = "${var.resource_name_prefix}-bastion"
+  name                = "${var.resource_name_prefix}-bastion"
   resource_group_name = var.resource_group_name
-  location = var.location
-  tags = var.tags
+  location            = var.location
+  tags                = var.tags
 
   ip_configuration {
-    name = "config"
-    subnet_id = azurerm_subnet.bastion.id
+    name                 = "config"
+    subnet_id            = azurerm_subnet.bastion.id
     public_ip_address_id = azurerm_public_ip.bastion.id
   }
 }

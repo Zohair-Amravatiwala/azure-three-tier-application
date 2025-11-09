@@ -6,14 +6,14 @@
 
 # Azure Key Vault
 resource "azurerm_key_vault" "key_vault" {
-  name = "${var.resource_name_prefix}-kv"
-  resource_group_name = var.resource_group_name
-  location = var.location
-  sku_name = "standard"
-  tenant_id = var.tenant_id
+  name                        = "${var.resource_name_prefix}-kv"
+  resource_group_name         = var.resource_group_name
+  location                    = var.location
+  sku_name                    = "standard"
+  tenant_id                   = var.tenant_id
   enabled_for_disk_encryption = true
-  rbac_authorization_enabled = false
-  purge_protection_enabled = false
+  rbac_authorization_enabled  = false
+  purge_protection_enabled    = false
 
   # Common access policies
   access_policy = {
@@ -47,7 +47,7 @@ resource "azurerm_key_vault" "key_vault" {
   #Network access configuration
   network_acls {
     default_action = "Allow" # Consider changing to "Deny" in production and explicitly allowing needed IPs/VNets
-    bypass = "AzureServices"
+    bypass         = "AzureServices"
   }
 
 }

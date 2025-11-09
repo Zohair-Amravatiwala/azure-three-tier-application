@@ -208,10 +208,10 @@ module "backend" {
 
 # Update Key Vault with backend identity
 resource "azurerm_key_vault_access_policy" "backend_policy" {
-  count = var.deploy_compute ? 1 :0
+  count        = var.deploy_compute ? 1 : 0
   key_vault_id = module.key_vault.key_vault_id
-  tenant_id = data.azurerm_client_config.current.tenant_id
-  object_id = module.backend[0].identity_principal_id
+  tenant_id    = data.azurerm_client_config.current.tenant_id
+  object_id    = module.backend[0].identity_principal_id
 
   secret_permissions = [
     "Get", "List"

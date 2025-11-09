@@ -1,5 +1,5 @@
 variable "appName" {
-  type = string
+  type    = string
   default = "three-tier-app"
 }
 variable "environment" {

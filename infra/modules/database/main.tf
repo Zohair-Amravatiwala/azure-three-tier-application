@@ -7,47 +7,47 @@
  */
 
 resource "random_password" "postgres_password" {
-  length = 16
-  special = true
+  length           = 16
+  special          = true
   override_special = "_%@"
-  min_lower = 1
-  min_numeric = 1
-  min_special = 1
-  min_upper = 1
+  min_lower        = 1
+  min_numeric      = 1
+  min_special      = 1
+  min_upper        = 1
 }
 
 # Primary PostgreSQL Flexible server
 resource "azurerm_postgresql_flexible_server" "primary" {
-  name = "${var.resource_name_prefix}-psql"
-  resource_group_name = var.resource_group_name
-  location = var.location
-  version = var.postgres_version
-  delegated_subnet_id = var.database_subnet_ids[0]
-  private_dns_zone_id = var.private_dns_zone_id
-  administrator_login = "psqladmin"
+  name                   = "${var.resource_name_prefix}-psql"
+  resource_group_name    = var.resource_group_name
+  location               = var.location
+  version                = var.postgres_version
+  delegated_subnet_id    = var.database_subnet_ids[0]
+  private_dns_zone_id    = var.private_dns_zone_id
+  administrator_login    = "psqladmin"
   administrator_password = random_password.postgres_password.result
-  zone = "1"
-  storage_mb = var.postgres_storage_mb
-  storage_tier = "P30" # Added based on recommended storage tier for storage_mb
-  auto_grow_enabled = true # Added to allow storage to grow as needed
-  sku_name = var.postgres_sku_name
-  tags = var.tags
+  zone                   = "1"
+  storage_mb             = var.postgres_storage_mb
+  storage_tier           = "P30" # Added based on recommended storage tier for storage_mb
+  auto_grow_enabled      = true  # Added to allow storage to grow as needed
+  sku_name               = var.postgres_sku_name
+  tags                   = var.tags
 
   # Using ignore_changes for zone to prevent unnecessary updates after failovers
   lifecycle {
-    ignore_changes = [ 
-        zone,
-        high_availibility[0].standby_availability_zone
-        ]
+    ignore_changes = [
+      zone,
+      high_availibility[0].standby_availability_zone
+    ]
   }
   high_availability {
-    mode = "ZoneRedundant"
+    mode                      = "ZoneRedundant"
     standby_availability_zone = "2"
   }
 
   maintenance_window {
-    day_of_week = 0
-    start_hour = 0
+    day_of_week  = 0
+    start_hour   = 0
     start_minute = 0
   }
 
@@ -60,44 +60,44 @@ resource "azurerm_postgresql_flexible_server" "primary" {
 
 # Initial Database
 resource "azurerm_postgresql_flexible_server_database" "db" {
-  name = var.postgres_db_name
+  name      = var.postgres_db_name
   server_id = azurerm_postgresql_flexible_server.primary.id
-  charset = "UTF8"
+  charset   = "UTF8"
   collation = "en_US.utf8"
 }
 
 # PostgreSQL Flexible server Read Replica
 resource "azurerm_postgresql_flexible_server" "replica" {
-  name = "${var.resource_name_prefix}-psql-replcia"
-  resource_group_name = var.resource_group_name
-  location = var.location
-  version = var.postgres_version
-  delegated_subnet_id = var.database_subnet_ids[1]
-  private_dns_zone_id = var.private_dns_zone_id
-  administrator_login = "psqladmin"
+  name                   = "${var.resource_name_prefix}-psql-replcia"
+  resource_group_name    = var.resource_group_name
+  location               = var.location
+  version                = var.postgres_version
+  delegated_subnet_id    = var.database_subnet_ids[1]
+  private_dns_zone_id    = var.private_dns_zone_id
+  administrator_login    = "psqladmin"
   administrator_password = random_password.postgres_password.result
-  zone = "2"
-  storage_mb = var.postgres_storage_mb
-  storage_tier = "P30"
-  auto_grow_enabled = true
-  sku_name = var.postgres_sku_name
-  tags = var.tags
+  zone                   = "2"
+  storage_mb             = var.postgres_storage_mb
+  storage_tier           = "P30"
+  auto_grow_enabled      = true
+  sku_name               = var.postgres_sku_name
+  tags                   = var.tags
 
-  create_mode = "Replica"
+  create_mode      = "Replica"
   source_server_id = azurerm_postgresql_flexible_server.primary.id
 
   public_network_access_enabled = false
 
-  depends_on = [ azurerm_postgresql_flexible_server.primary ]
+  depends_on = [azurerm_postgresql_flexible_server.primary]
 }
 
 # Configure PostreSQL aprameters for performance and security
 resource "azurerm_postgresql_flexible_server_configuration" "primary_ssl" {
-  name = "ssl_min_protocol_version"
+  name      = "ssl_min_protocol_version"
   server_id = azurerm_postgresql_flexible_server.primary.id
-  value = "TLSv1.2"
+  value     = "TLSv1.2"
 
-  depends_on = [ azurerm_postgresql_flexible_server.replica # Ensure replica is created before applying this configuration
+  depends_on = [azurerm_postgresql_flexible_server.replica # Ensure replica is created before applying this configuration
   ]
 }
 
