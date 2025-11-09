@@ -2,7 +2,7 @@ resource "random_string" "prefix" {
   length  = 5
   special = false
   upper   = false
-  numeric = false
+  # numeric = false
   lower   = true
 }
 
@@ -72,7 +72,7 @@ module "key_vault" {
   tenant_id            = data.azurerm_client_config.current.tenant_id
   object_id            = data.azurerm_client_config.current.object_id
   tags                 = local.comman_tags
-  depends_on           = [module.databse]
+  depends_on           = [module.database]
 }
 
 # After Key Vault is created, store database credentials as secrets
@@ -94,51 +94,51 @@ resource "azurerm_key_vault_secret" "db_username" {
 resource "azurerm_key_vault_secret" "db_password" {
   name         = "db-password"
   value        = module.database.administrator_password
-  key_vault_id = module.keyvault.key_vault_id
+  key_vault_id = module.key_vault.key_vault_id
 
-  depends_on = [module.keyvault, module.database]
+  depends_on = [module.key_vault, module.database]
 }
 
 resource "azurerm_key_vault_secret" "db_name" {
   name         = "db-name"
   value        = var.postgres_db_name
-  key_vault_id = module.keyvault.key_vault_id
+  key_vault_id = module.key_vault.key_vault_id
 
-  depends_on = [module.keyvault]
+  depends_on = [module.key_vault]
 }
 
 # Add DB port and SSL mode to Key Vault
 resource "azurerm_key_vault_secret" "db_port" {
   name         = "db-port"
   value        = tostring(var.postgres_db_port)
-  key_vault_id = module.keyvault.key_vault_id
+  key_vault_id = module.key_vault.key_vault_id
 
-  depends_on = [module.keyvault]
+  depends_on = [module.key_vault]
 }
 
 resource "azurerm_key_vault_secret" "db_sslmode" {
   name         = "db-sslmode"
   value        = var.postgres_db_sslmode
-  key_vault_id = module.keyvault.key_vault_id
+  key_vault_id = module.key_vault.key_vault_id
 
-  depends_on = [module.keyvault]
+  depends_on = [module.key_vault]
 }
 
 # Store Docker credentials in Key Vault
 resource "azurerm_key_vault_secret" "dockerhub_username" {
   name         = "docker-username"
   value        = var.docker_username
-  key_vault_id = module.keyvault.key_vault_id
+  key_vault_id = module.key_vault.key_vault_id
 
-  depends_on = [module.keyvault]
+  depends_on = [module.key_vault]
 }
 
 resource "azurerm_key_vault_secret" "dockerhub_pat" {
   name         = "docker-pat"
   value        = var.docker_password
-  key_vault_id = module.keyvault.key_vault_id
+  key_vault_id = module.key_vault.key_vault_id
 
-  depends_on = [module.keyvault]
+  depends_on = [module.key_vault]
 }
 
 # Compute - Frontend VMSS
@@ -218,7 +218,7 @@ resource "azurerm_key_vault_access_policy" "backend_policy" {
   ]
 
   depends_on = [
-    module.keyvault,
+    module.key_vault,
     module.backend
   ]
 }

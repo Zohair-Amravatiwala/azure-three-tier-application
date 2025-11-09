@@ -16,7 +16,7 @@ resource "azurerm_key_vault" "key_vault" {
   purge_protection_enabled    = false
 
   # Common access policies
-  access_policy = {
+  access_policy  {
     tenant_id = var.tenant_id
     object_id = var.object_id
 

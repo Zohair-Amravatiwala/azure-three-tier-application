@@ -48,7 +48,7 @@ locals {
 }
 
 # VM SSH key for admin access
-resource "tls_private_key" "shh" {
+resource "tls_private_key" "ssh" {
   algorithm = "RSA"
   rsa_bits  = 4096
 }
@@ -207,7 +207,7 @@ resource "azurerm_linux_virtual_machine_scale_set" "vmss" {
   disable_password_authentication = true
   admin_ssh_key {
     username   = var.admin_username
-    public_key = tls_private_key.shh.public_key_openssh
+    public_key = tls_private_key.ssh.public_key_openssh
   }
   upgrade_mode    = "Automatic"
   custom_data     = base64encode(local.provisioning_script_content)

@@ -35,7 +35,7 @@ output "load_balancer_private_ip" {
 
 output "public_ip_address" {
   description = "Public IP address of the Application Gateway (frontend only)"
-  value       = var.is_frontend ? azurerm_public_ip.lb[0].ip_address : null
+  value       = var.is_frontend ? azurerm_public_ip.appgw[0].ip_address : null
 }
 
 output "ssh_private_key" {

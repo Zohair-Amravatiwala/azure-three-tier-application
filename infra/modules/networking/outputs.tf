@@ -50,5 +50,5 @@ output "bastion_host_name" {
 
 output "appgw_subnet_id" {
   description = "ID of the Application Gateway subnet"
-  value       = azurerm_subnet.appgw.id
+  value       = azurerm_subnet.app_gateway.id
 }

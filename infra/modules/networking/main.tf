@@ -173,7 +173,7 @@ resource "azurerm_subnet" "database" {
 }
 
 #Database Subnet NSG
-resource "azurerm_network_security_group" "databse" {
+resource "azurerm_network_security_group" "database" {
   name                = "${var.resource_name_prefix}-db-nsg"
   resource_group_name = var.resource_group_name
   location            = var.location
@@ -220,7 +220,7 @@ resource "azurerm_network_security_group" "databse" {
 resource "azurerm_subnet_network_security_group_association" "database" {
   count                     = length(var.database_subnet_address_prefixes)
   subnet_id                 = azurerm_subnet.database[count.index].id
-  network_security_group_id = azurerm_network_security_group.databse.id
+  network_security_group_id = azurerm_network_security_group.database.id
 }
 
 # Bastion Subnet
