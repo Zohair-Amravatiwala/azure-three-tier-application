@@ -78,7 +78,7 @@ resource "azurerm_network_security_group" "public" {
     source_address_prefix      = "*"
     source_port_range          = "*"
     destination_address_prefix = "*"
-    destination_port_ranges    = [65200 - 65535]
+    destination_port_ranges    = ["65200-65535"]
   }
 }
 
@@ -225,7 +225,7 @@ resource "azurerm_subnet_network_security_group_association" "database" {
 
 # Bastion Subnet
 resource "azurerm_subnet" "bastion" {
-  name                 = "${var.resource_name_prefix}-bastion-snet"
+  name                 = "AzureBastionSubnet"
   resource_group_name  = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.main.name
   address_prefixes     = [var.bastion_subnet_address_prefix]

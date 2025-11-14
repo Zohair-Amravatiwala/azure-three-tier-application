@@ -87,7 +87,7 @@ resource "azurerm_key_vault_secret" "db_host" {
 resource "azurerm_key_vault_secret" "db_username" {
   name         = "db-username"
   value        = module.database.administrator_login
-  key_vault_id = module.key_vault.key_vault_name
+  key_vault_id = module.key_vault.key_vault_id
   depends_on   = [module.key_vault, module.database]
 }
 
@@ -125,7 +125,7 @@ resource "azurerm_key_vault_secret" "db_sslmode" {
 }
 
 # Store Docker credentials in Key Vault
-resource "azurerm_key_vault_secret" "dockerhub_username" {
+resource "azurerm_key_vault_secret" "docker_username" {
   name         = "docker-username"
   value        = var.docker_username
   key_vault_id = module.key_vault.key_vault_id
@@ -133,8 +133,8 @@ resource "azurerm_key_vault_secret" "dockerhub_username" {
   depends_on = [module.key_vault]
 }
 
-resource "azurerm_key_vault_secret" "dockerhub_pat" {
-  name         = "docker-pat"
+resource "azurerm_key_vault_secret" "docker_password" {
+  name         = "docker-password"
   value        = var.docker_password
   key_vault_id = module.key_vault.key_vault_id
 
@@ -146,7 +146,7 @@ module "frontend" {
   count  = var.deploy_compute ? 1 : 0
   source = "./modules/compute"
 
-  resource_group_name  = var.resource_group_name
+  resource_group_name  = azurerm_resource_group.main.name
   resource_name_prefix = local.resource_name_prefix
   location             = var.location
   subnet_id            = module.networking.public_subnet_ids[0]
